@@ -1,0 +1,139 @@
+<div class="app-container">
+  <!-- Header -->
+  <header class="app-header" *ngIf="isLoggedIn">
+    <div class="header-content">
+      <div class="logo-section">
+        <img src="assets/images/logo.png" alt="Flour Delivery" class="logo">
+        <h1 class="app-title">{{ title }}</h1>
+      </div>
+      
+      <div class="header-actions">
+        <!-- Notifications -->
+        <div class="notification-section">
+          <button class="notification-btn" (click)="toggleNotifications()">
+            <i class="fas fa-bell"></i>
+            <span class="notification-badge" *ngIf="notifications.length > 0">
+              {{ notifications.length }}
+            </span>
+          </button>
+          
+          <!-- Notifications Dropdown -->
+          <div class="notifications-dropdown" *ngIf="showNotifications">
+            <div class="notifications-header">
+              <h3>Notifications</h3>
+              <button class="close-btn" (click)="showNotifications = false">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+            
+            <div class="notifications-list">
+              <div class="notification-item" *ngFor="let notification of notifications" 
+                   (click)="markNotificationAsRead(notification.id)">
+                <div class="notification-content">
+                  <h4>{{ notification.title }}</h4>
+                  <p>{{ notification.message }}</p>
+                  <small>{{ notification.createdAt | date:'short' }}</small>
+                </div>
+                <div class="notification-status" *ngIf="!notification.isRead"></div>
+              </div>
+              
+              <div class="no-notifications" *ngIf="notifications.length === 0">
+                <p>No new notifications</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- User Menu -->
+        <div class="user-menu">
+          <button class="user-btn" (click)="toggleUserMenu()">
+            <img [src]="currentUser?.profileImage || 'assets/images/default-avatar.png'" 
+                 alt="Profile" class="user-avatar">
+            <span class="user-name">{{ currentUser?.name || 'User' }}</span>
+            <i class="fas fa-chevron-down"></i>
+          </button>
+          
+          <div class="user-dropdown" *ngIf="showUserMenu">
+            <a routerLink="/profile" class="dropdown-item">
+              <i class="fas fa-user"></i> Profile
+            </a>
+            <a routerLink="/orders" class="dropdown-item">
+              <i class="fas fa-list"></i> My Orders
+            </a>
+            <a routerLink="/subscriptions" class="dropdown-item">
+              <i class="fas fa-repeat"></i> Subscriptions
+            </a>
+            <button class="dropdown-item logout-btn" (click)="onLogout()">
+              <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="app-main">
+    <router-outlet></router-outlet>
+  </main>
+
+  <!-- Bottom Navigation (Mobile) -->
+  <nav class="bottom-nav" *ngIf="isLoggedIn">
+    <a routerLink="/home" routerLinkActive="active" class="nav-item">
+      <i class="fas fa-home"></i>
+      <span>Home</span>
+    </a>
+    
+    <a routerLink="/products" routerLinkActive="active" class="nav-item">
+      <i class="fas fa-shopping-bag"></i>
+      <span>Products</span>
+    </a>
+    
+    <a routerLink="/cart" routerLinkActive="active" class="nav-item cart-nav">
+      <i class="fas fa-shopping-cart"></i>
+      <span>Cart</span>
+      <span class="cart-badge" *ngIf="cartItemCount > 0">
+        {{ cartItemCount }}
+      </span>
+    </a>
+    
+    <a routerLink="/orders" routerLinkActive="active" class="nav-item">
+      <i class="fas fa-list"></i>
+      <span>Orders</span>
+    </a>
+    
+    <a routerLink="/profile" routerLinkActive="active" class="nav-item">
+      <i class="fas fa-user"></i>
+      <span>Profile</span>
+    </a>
+  </nav>
+
+  <!-- PWA Install Prompt -->
+  <div class="pwa-install-prompt" *ngIf="showPWAInstallPrompt">
+    <div class="prompt-content">
+      <div class="prompt-icon">
+        <i class="fas fa-download"></i>
+      </div>
+      <div class="prompt-text">
+        <h3>Install Flour Delivery App</h3>
+        <p>Get the best experience by installing our app on your device</p>
+      </div>
+      <div class="prompt-actions">
+        <button class="btn btn-primary" (click)="installPWA()">
+          Install
+        </button>
+        <button class="btn btn-secondary" (click)="dismissPWAInstall()">
+          Later
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading Overlay -->
+  <div class="loading-overlay" *ngIf="isLoading">
+    <div class="loading-spinner">
+      <div class="spinner"></div>
+      <p>Loading...</p>
+    </div>
+  </div>
+</div>

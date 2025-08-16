@@ -1,0 +1,52 @@
+<div class="product-card" (click)="onProductClick()">
+  <div class="product-image">
+    <img [src]="product.imageUrl" [alt]="product.name" class="product-img">
+    <div class="product-category">{{ product.category | titlecase }}</div>
+    <div class="product-availability" [class.available]="product.isAvailable">
+      {{ product.isAvailable ? 'In Stock' : 'Out of Stock' }}
+    </div>
+  </div>
+  
+  <div class="product-content">
+    <h3 class="product-name">{{ product.name }}</h3>
+    <p class="product-description">{{ product.description }}</p>
+    
+    <div class="product-meta">
+      <div class="weight-range">{{ getWeightRange() }}</div>
+      <div class="price-range">{{ getPriceRange() }}</div>
+    </div>
+    
+    <div class="product-variants" *ngIf="showVariants && product.variants.length > 0">
+      <div class="variant-options">
+        <button 
+          *ngFor="let variant of product.variants"
+          [class]="'variant-btn' + (selectedVariant?.weight === variant.weight ? ' active' : '') + (!isVariantAvailable(variant) ? ' disabled' : '')"
+          (click)="onVariantSelect(variant)"
+          [disabled]="!isVariantAvailable(variant)">
+          {{ variant.weight }}kg
+        </button>
+      </div>
+      
+      <div class="selected-variant" *ngIf="selectedVariant">
+        <span class="variant-weight">{{ selectedVariant.weight }}kg</span>
+        <span class="variant-price">₹{{ selectedVariant.price }}</span>
+      </div>
+    </div>
+    
+    <div class="product-actions" *ngIf="showAddToCart">
+      <div class="quantity-selector">
+        <button class="qty-btn" (click)="onQuantityChange(-1)" [disabled]="quantity <= 1">-</button>
+        <span class="quantity">{{ quantity }}</span>
+        <button class="qty-btn" (click)="onQuantityChange(1)" [disabled]="quantity >= 10">+</button>
+      </div>
+      
+      <button 
+        class="add-to-cart-btn"
+        (click)="onAddToCart()"
+        [disabled]="!selectedVariant || !product.isAvailable">
+        <i class="fas fa-shopping-cart"></i>
+        Add to Cart
+      </button>
+    </div>
+  </div>
+</div>
